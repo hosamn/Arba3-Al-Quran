@@ -1,12 +1,14 @@
-import json, math
+import json, math, zipfile
 
 # Load rub metadata
-with open("quran-metadata-rub.json", encoding="utf-8") as f:
-    rubs = json.load(f)
+with zipfile.ZipFile("quran-metadata-rub.json.zip", "r") as archive:
+    file = archive.read(archive.namelist()[0])
+    rubs = json.loads(file)
 
 # Load ayah metadata (ayah texts keyed by "sura:ayah")
-with open("quran-metadata-ayah.json", encoding="utf-8") as f:
-    ayahs = json.load(f)
+with zipfile.ZipFile("quran-metadata-ayah.json.zip", "r") as archive:
+    file = archive.read(archive.namelist()[0])
+    ayahs = json.loads(file)
 
 results = []
 
@@ -16,7 +18,7 @@ for rub in rubs.values():
 
     for ayah_data in ayahs.values():
         if int(surah) == int(ayah_data["surah_number"]) and int(ayah) == int(ayah_data["ayah_number"]):
-            first_5_words = ' '.join(ayah_data["text"].split()[:5])
+            first_5_words = ' '.join(ayah_data["text"].split()[:5]).replace("۞ ", "").replace(" ١", "")
 
             numr = rub["rub_number"]
             guz2 = math.ceil(rub["rub_number"]/8)
